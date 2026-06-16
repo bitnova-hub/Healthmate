@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HealthMate — Your Daily Wellness Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-50: #EAF7F1;
+    --green-100: #C6ECD9;
+    --green-500: #2DB87A;
+    --green-600: #1F9963;
+    --green-700: #176E48;
+    --teal-50: #E1F5EE;
+    --teal-500: #1D9E75;
+    --teal-700: #085041;
+    --bg: #F6FBF8;
+    --surface: #FFFFFF;
+    --border: #D4EDE1;
+    --text: #1A2E23;
+    --muted: #5A7A6A;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--green-700);
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--green-500);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 1.1rem;
+  }
+  .date-badge {
+    background: var(--green-50);
+    color: var(--green-700);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid var(--green-100);
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--green-700) 0%, var(--teal-500) 100%);
+    color: white;
+    padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+  .hero p {
+    font-size: 1.05rem;
+    opacity: 0.88;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+  .hero-stat {
+    text-align: center;
+  }
+  .hero-stat .num {
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: block;
+  }
+  .hero-stat .label {
+    font-size: 0.8rem;
+    opacity: 0.75;
+    letter-spacing: 0.5px;
+  }
+
+  /* MAIN GRID */
+  main {
+    max-width: 900px;
+    margin: -2rem auto 3rem;
+    padding: 0 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 20px rgba(29,158,117,0.12); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+  .card-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .icon-water { background: #EBF5FF; }
+  .icon-bmi   { background: #FFF4E6; }
+  .icon-steps { background: #EDFAF3; }
+  .icon-sleep { background: #F0EEFF; }
+  .icon-quote { background: #FFF0F3; }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text);
+  }
+  .card-subtitle {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* WATER TRACKER */
+  .glasses-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+  .glass-btn {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: white;
+    cursor: pointer;
+    font-size: 1.3rem;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .glass-btn.filled {
+    background: #EBF5FF;
+    border-color: #60AEFF;
+    transform: scale(1.04);
+  }
+  .water-status {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .water-count {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2B7FE0;
+  }
+
+  /* BMI */
+  .bmi-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .input-group label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .input-group input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .input-group input:focus { border-color: var(--green-500); }
+
+  .btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--green-600);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--green-700); }
+
+  .bmi-result {
+    text-align: center;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    margin-top: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    display: none;
+  }
+  .bmi-result.show { display: block; }
+  .bmi-normal  { background: #EDFAF3; color: var(--green-700); }
+  .bmi-under   { background: #EBF5FF; color: #1A5FAD; }
+  .bmi-over    { background: #FFF4E6; color: #A05C00; }
+  .bmi-obese   { background: #FFF0F0; color: #C0392B; }
+
+  /* STEP TRACKER */
+  .step-display {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .step-num {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--green-500);
+    line-height: 1;
+  }
+  .step-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .progress-bar {
+    height: 10px;
+    background: var(--green-50);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-500), var(--teal-500));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+  .step-controls {
+    display: flex;
+    gap: 8px;
+  }
+  .step-btn {
+    flex: 1;
+    padding: 9px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: white;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .step-btn:hover { background: var(--green-50); border-color: var(--green-500); }
+
+  /* SLEEP */
+  .sleep-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 1rem;
+  }
+  .sleep-btn {
+    padding: 8px 4px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: white;
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--muted);
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .sleep-btn:hover { border-color: #7B5CE5; color: #7B5CE5; }
+  .sleep-btn.active { background: #F0EEFF; border-color: #7B5CE5; color: #4A2E9B; }
+  .sleep-status {
+    text-align: center;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: var(--bg);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .sleep-status.good  { background: #EDFAF3; color: var(--green-700); border-color: var(--green-100); }
+  .sleep-status.ok    { background: #FFF4E6; color: #A05C00; border-color: #FFE0A0; }
+  .sleep-status.poor  { background: #FFF0F0; color: #C0392B; border-color: #FFCECE; }
+
+  /* QUOTE */
+  .quote-card { grid-column: 1 / -1; }
+  .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+    min-height: 60px;
+  }
+  .quote-author {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .quote-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 1.25rem;
+  }
+  .btn-outline {
+    flex: 1;
+    padding: 9px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: white;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--green-700);
+    transition: all 0.15s;
+  }
+  .btn-outline:hover { background: var(--green-50); border-color: var(--green-500); }
+
+  /* RESET */
+  .reset-section {
+    max-width: 900px;
+    margin: 0 auto 3rem;
+    padding: 0 1.25rem;
+    text-align: center;
+  }
+  .btn-reset {
+    padding: 10px 28px;
+    border: 1.5px solid var(--border);
+    border-radius: 99px;
+    background: white;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.88rem;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+  .btn-reset:hover { color: #C0392B; border-color: #FFCECE; background: #FFF0F0; }
+
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: 1.25rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  footer strong { color: var(--green-700); }
+
+  @media (max-width: 540px) {
+    header { padding: 0.85rem 1rem; }
+    .hero { padding: 2rem 1rem 3rem; }
+    main { grid-template-columns: 1fr; }
+    .quote-card { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">🌿</div>
+    HealthMate
+  </div>
+  <div class="date-badge" id="dateBadge"></div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Your Daily<br>Wellness Dashboard</h1>
+  <p>Track water, BMI, steps, and sleep — all in one clean, simple place.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="num" id="heroWater">0</span>
+      <span class="label">GLASSES TODAY</span>
+    </div>
+    <div class="hero-stat">
+      <span class="num" id="heroSteps">0</span>
+      <span class="label">STEPS LOGGED</span>
+    </div>
+    <div class="hero-stat">
+      <span class="num" id="heroSleep">—</span>
+      <span class="label">HOURS SLEPT</span>
+    </div>
+  </div>
+</div>
+
+<!-- CARDS -->
+<main>
+
+  <!-- WATER -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-water">💧</div>
+      <div>
+        <div class="card-title">Water Intake</div>
+        <div class="card-subtitle">Goal: 8 glasses per day</div>
+      </div>
+    </div>
+    <div class="glasses-grid" id="glassesGrid"></div>
+    <div class="water-status">
+      <span class="water-count" id="waterCount">0</span> / 8 glasses
+    </div>
+  </div>
+
+  <!-- BMI -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-bmi">⚖️</div>
+      <div>
+        <div class="card-title">BMI Calculator</div>
+        <div class="card-subtitle">Body Mass Index</div>
+      </div>
+    </div>
+    <div class="bmi-inputs">
+      <div class="input-group">
+        <label>Weight (kg)</label>
+        <input type="number" id="weight" placeholder="e.g. 60" min="20" max="300" />
+      </div>
+      <div class="input-group">
+        <label>Height (cm)</label>
+        <input type="number" id="height" placeholder="e.g. 165" min="100" max="250" />
+      </div>
+    </div>
+    <button class="btn" onclick="calcBMI()">Calculate BMI</button>
+    <div class="bmi-result" id="bmiResult"></div>
+  </div>
+
+  <!-- STEPS -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-steps">🚶</div>
+      <div>
+        <div class="card-title">Step Tracker</div>
+        <div class="card-subtitle">Goal: 10,000 steps</div>
+      </div>
+    </div>
+    <div class="step-display">
+      <div class="step-num" id="stepCount">0</div>
+      <div class="step-label">steps logged</div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="stepBar" style="width:0%"></div>
+    </div>
+    <div class="step-controls">
+      <button class="step-btn" onclick="addSteps(500)">+ 500</button>
+      <button class="step-btn" onclick="addSteps(1000)">+ 1,000</button>
+      <button class="step-btn" onclick="addSteps(2000)">+ 2,000</button>
+    </div>
+  </div>
+
+  <!-- SLEEP -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-sleep">😴</div>
+      <div>
+        <div class="card-title">Sleep Logger</div>
+        <div class="card-subtitle">Last night's sleep</div>
+      </div>
+    </div>
+    <div class="sleep-grid" id="sleepGrid"></div>
+    <div class="sleep-status" id="sleepStatus">Select hours slept 👆</div>
+  </div>
+
+  <!-- QUOTE -->
+  <div class="card quote-card">
+    <div class="card-header">
+      <div class="card-icon icon-quote">✨</div>
+      <div>
+        <div class="card-title">Health Quote of the Day</div>
+        <div class="card-subtitle">Daily motivation</div>
+      </div>
+    </div>
+    <div class="quote-text" id="quoteText"></div>
+    <div class="quote-author" id="quoteAuthor"></div>
+    <div class="quote-actions">
+      <button class="btn-outline" onclick="nextQuote()">New Quote</button>
+      <button class="btn btn-outline" style="background:var(--green-600);color:white;border-color:var(--green-600);" onclick="copyQuote()">Copy Quote</button>
+    </div>
+  </div>
+
+</main>
+
+<div class="reset-section">
+  <button class="btn-reset" onclick="resetAll()">🔄 Reset Today's Data</button>
+</div>
+
+<footer>
+  Built with 💚 by <strong>Javeria</strong> — HealthMate &copy; 2025
+</footer>
+
+<script>
+  // ── QUOTES ──────────────────────────────────────────────
+  const quotes = [
+    { text: "Take care of your body. It's the only place you have to live.", author: "Jim Rohn" },
+    { text: "Health is not about the weight you lose, but about the life you gain.", author: "Unknown" },
+    { text: "The groundwork for all happiness is good health.", author: "Leigh Hunt" },
+    { text: "A healthy outside starts from the inside.", author: "Robert Urich" },
+    { text: "Your body can stand almost anything. It's your mind you have to convince.", author: "Unknown" },
+    { text: "To keep the body in good health is a duty, otherwise we shall not be able to keep our mind strong.", author: "Buddha" },
+    { text: "An apple a day keeps the doctor away — consistency is the real medicine.", author: "Unknown" },
+    { text: "Small daily improvements over time lead to stunning results.", author: "Robin Sharma" },
+    { text: "The first wealth is health.", author: "Ralph Waldo Emerson" },
+    { text: "Sleep is the best meditation.", author: "Dalai Lama" },
+  ];
+  let quoteIndex = 0;
+
+  function showQuote() {
+    const q = quotes[quoteIndex];
+    document.getElementById('quoteText').textContent = '\u201c' + q.text + '\u201d';
+    document.getElementById('quoteAuthor').textContent = '\u2014 ' + q.author;
+  }
+  function nextQuote() {
+    quoteIndex = (quoteIndex + 1) % quotes.length;
+    showQuote();
+  }
+  function copyQuote() {
+    const q = quotes[quoteIndex];
+    navigator.clipboard.writeText('\u201c' + q.text + '\u201d \u2014 ' + q.author)
+      .then(() => alert('Quote copied!'));
+  }
+
+  // ── DATE ─────────────────────────────────────────────────
+  function setDate() {
+    const d = new Date();
+    const opts = { weekday:'long', month:'long', day:'numeric' };
+    document.getElementById('dateBadge').textContent = d.toLocaleDateString('en-US', opts);
+  }
+
+  // ── WATER ─────────────────────────────────────────────────
+  function buildGlasses(filled) {
+    const grid = document.getElementById('glassesGrid');
+    grid.innerHTML = '';
+    for (let i = 0; i < 8; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'glass-btn' + (i < filled ? ' filled' : '');
+      btn.textContent = i < filled ? '🥤' : '🫙';
+      btn.setAttribute('aria-label', 'Glass ' + (i+1));
+      btn.onclick = () => { toggleGlass(i); };
+      grid.appendChild(btn);
+    }
+    document.getElementById('waterCount').textContent = filled;
+    document.getElementById('heroWater').textContent = filled;
+  }
+  function toggleGlass(idx) {
+    let filled = parseInt(localStorage.getItem('hm_water') || '0');
+    filled = (idx < filled) ? idx : idx + 1;
+    localStorage.setItem('hm_water', filled);
+    buildGlasses(filled);
+  }
+
+  // ── BMI ───────────────────────────────────────────────────
+  function calcBMI() {
+    const w = parseFloat(document.getElementById('weight').value);
+    const h = parseFloat(document.getElementById('height').value) / 100;
+    const res = document.getElementById('bmiResult');
+    if (!w || !h || h <= 0) {
+      res.className = 'bmi-result bmi-under show';
+      res.textContent = 'Please enter valid weight and height.';
+      return;
+    }
+    const bmi = (w / (h * h)).toFixed(1);
+    let cls, msg;
+    if (bmi < 18.5)      { cls = 'bmi-under'; msg = 'BMI ' + bmi + ' — Underweight. Eat well! 🍽️'; }
+    else if (bmi < 25)   { cls = 'bmi-normal'; msg = 'BMI ' + bmi + ' — Healthy weight! 🎉'; }
+    else if (bmi < 30)   { cls = 'bmi-over'; msg = 'BMI ' + bmi + ' — Overweight. Stay active! 🏃'; }
+    else                 { cls = 'bmi-obese'; msg = 'BMI ' + bmi + ' — Obese. Consult a doctor. 💙'; }
+    res.className = 'bmi-result ' + cls + ' show';
+    res.textContent = msg;
+  }
+
+  // ── STEPS ─────────────────────────────────────────────────
+  function renderSteps(steps) {
+    document.getElementById('stepCount').textContent = steps.toLocaleString();
+    document.getElementById('heroSteps').textContent = steps.toLocaleString();
+    const pct = Math.min((steps / 10000) * 100, 100).toFixed(1);
+    document.getElementById('stepBar').style.width = pct + '%';
+  }
+  function addSteps(n) {
+    const s = parseInt(localStorage.getItem('hm_steps') || '0') + n;
+    localStorage.setItem('hm_steps', s);
+    renderSteps(s);
+  }
+
+  // ── SLEEP ─────────────────────────────────────────────────
+  const sleepHours = [4, 5, 6, 7, 8, 9, 10, 11];
+  function buildSleep(selected) {
+    const grid = document.getElementById('sleepGrid');
+    grid.innerHTML = '';
+    sleepHours.forEach(h => {
+      const btn = document.createElement('button');
+      btn.className = 'sleep-btn' + (selected === h ? ' active' : '');
+      btn.textContent = h + 'h';
+      btn.onclick = () => {
+        localStorage.setItem('hm_sleep', h);
+        buildSleep(h);
+        updateSleepStatus(h);
+      };
+      grid.appendChild(btn);
+    });
+    if (selected) updateSleepStatus(selected);
+  }
+  function updateSleepStatus(h) {
+    const el = document.getElementById('sleepStatus');
+    document.getElementById('heroSleep').textContent = h + 'h';
+    if (h >= 7 && h <= 9) {
+      el.className = 'sleep-status good'; el.textContent = '😊 Great! ' + h + ' hours is ideal sleep.';
+    } else if (h === 6 || h === 10) {
+      el.className = 'sleep-status ok'; el.textContent = '😐 Okay. Aim for 7–9 hours for best health.';
+    } else {
+      el.className = 'sleep-status poor'; el.textContent = '😕 ' + (h < 6 ? 'Too little' : 'Too much') + ' sleep. Rest is important!';
+    }
+  }
+
+  // ── RESET ─────────────────────────────────────────────────
+  function resetAll() {
+    if (!confirm('Reset all of today\'s data?')) return;
+    ['hm_water','hm_steps','hm_sleep'].forEach(k => localStorage.removeItem(k));
+    init();
+  }
+
+  // ── INIT ──────────────────────────────────────────────────
+  function init() {
+    setDate();
+    showQuote();
+    const water = parseInt(localStorage.getItem('hm_water') || '0');
+    buildGlasses(water);
+    const steps = parseInt(localStorage.getItem('hm_steps') || '0');
+    renderSteps(steps);
+    const sleep = localStorage.getItem('hm_sleep') ? parseInt(localStorage.getItem('hm_sleep')) : null;
+    buildSleep(sleep);
+    if (!sleep) document.getElementById('heroSleep').textContent = '—';
+  }
+
+  init();
+</script>
+</body>
+</html>
